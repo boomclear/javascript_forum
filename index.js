@@ -1,44 +1,28 @@
-const express = require('express');
+const express = require("express");
+const cookieParser = require("cookie-parser");
+const userRoutes = require("./routes/user-routes");
+
+require("dotenv").config();
+
+//setting up your port
+const PORT = process.env.PORT || 3000;
+
+//assigning the variable app to express
 const app = express();
-const port = 3000;
 
-app.set('view engine', 'ejs');
+app.set("view engine", "ejs");
 
-let logger = (req, _res, next) => {
-  console.log(req.method, req.path);
-  next();
-}
+//middleware
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
-app.use(logger);
-
-// app.use((_req, _res, next) => {
-//   console.log(req.method, req.path);
-//   next();
-// });
-
-let allPathLeadToHelloWorld = (_req, res, _next) => {
-  res.render('index')
-}
-
-// app.use((req, res, next) => {
-//   if (req.method === 'GET' && req.path === '/') {
-//     allPathLeadToHelloWorld(req, res, next);
-//   } else {
-//     next();
-//   }
-// });
-
-// app.getOurs = (path, callback) => {
-//   if (req.method === 'GET' && req.path === path) {
-//     callback(req, res, next);
-//   } else {
-//     next();
-//   }
-// }
-
-app.get('/', allPathLeadToHelloWorld);
-app.get('/foo', allPathLeadToHelloWorld);
-
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+app.get("/", (_req, res) => {
+  res.render("index");
 });
+
+//routes for the user API
+app.use(express.json());
+app.use("/api/users", userRoutes);
+
+//listening to server connection
+app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));
